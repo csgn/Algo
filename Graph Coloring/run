@@ -1,0 +1,2 @@
+c++ -o app app.cpp `sdl2-config --cflags --libs`
+./app

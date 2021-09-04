@@ -5,13 +5,13 @@
 
 using namespace std;
 
-struct GHNode 
+struct GHNode
 {
   int id;
   GHNode *next;
 };
 
-struct GVNode 
+struct GVNode
 {
   int id;
   int degree;
@@ -32,7 +32,8 @@ void printGraph(GRAPH *graph)
 
   while (i < graph->size)
   {
-    cout << graph->root[i]->id << "(" << graph->root[i]->degree << ")" << "\t: ";
+    cout << graph->root[i]->id << "(" << graph->root[i]->degree << ")"
+         << "\t: ";
     walk = graph->root[i]->link;
     while (walk)
     {
@@ -44,6 +45,23 @@ void printGraph(GRAPH *graph)
   }
 
   free(walk);
+}
+
+void writeToFile(int **M, int r, int *cols, const string fileName)
+{
+  ofstream fs(fileName);
+
+  for (int i = 0; i < r; i++)
+  {
+    for (int j = 0; j < cols[i]; j++)
+    {
+      if (j == cols[i] - 1)
+        fs << M[i][j];
+      else
+        fs << M[i][j] << ",";
+    }
+    fs << '\n';
+  }
 }
 
 GRAPH *createGraph(string file)
@@ -62,16 +80,16 @@ GRAPH *createGraph(string file)
   getline(ss, line, ',');
   D = stoi(line);
 
-  graph = new GVNode * [N];
+  graph = new GVNode *[N];
   for (int i = 0; i < N; i++)
   {
     getline(fs, buffer);
     stringstream ss(buffer);
     getline(ss, line, ',');
-    
+
     graph[i] = new GVNode();
     graph[i]->id = stoi(line);
-    
+
     while (getline(ss, line, ','))
     {
       if (not hwalk)
@@ -79,7 +97,9 @@ GRAPH *createGraph(string file)
         graph[i]->link = new GHNode();
         graph[i]->link->id = stoi(line);
         hwalk = graph[i]->link;
-      } else {
+      }
+      else
+      {
         hwalk->next = new GHNode();
         hwalk->next->id = stoi(line);
         hwalk = hwalk->next;
@@ -87,10 +107,10 @@ GRAPH *createGraph(string file)
 
       graph[i]->degree++;
     }
-    
+
     hwalk = nullptr;
   }
-  
+
   hwalk = nullptr;
   free(hwalk);
 
@@ -105,12 +125,12 @@ void sortGraph(GRAPH *graph)
   for (int i = 1; i < graph->size; i++)
   {
     j = i;
-    while (j > 0 and (graph->root[j-1]->degree < graph->root[j]->degree or 
-    (graph->root[j-1]->degree == graph->root[j]->degree and graph->root[j-1]->id > graph->root[j]->id)))
+    while (j > 0 and (graph->root[j - 1]->degree < graph->root[j]->degree or
+                      (graph->root[j - 1]->degree == graph->root[j]->degree and graph->root[j - 1]->id > graph->root[j]->id)))
     {
       GVNode *tmp = graph->root[j];
-      graph->root[j] = graph->root[j-1];
-      graph->root[j-1] = tmp;
+      graph->root[j] = graph->root[j - 1];
+      graph->root[j - 1] = tmp;
       j--;
     }
   }
@@ -136,7 +156,7 @@ void colorifyGraph(GRAPH *graph, const int colorCount)
 
   int n = graph->size;
   int D[colorCount] = {0, 0, 0}, A[colorCount] = {0, 1, 2};
-  int **M = new int*[colorCount];
+  int **M = new int *[colorCount];
   GHNode *walk = nullptr;
 
   int M_size = colorCount;
@@ -159,7 +179,7 @@ void colorifyGraph(GRAPH *graph, const int colorCount)
 
       walk = walk->next;
     }
-    
+
     int a_index = -1;
     for (int l = 0; l < A_size; l++)
     {
@@ -177,12 +197,39 @@ void colorifyGraph(GRAPH *graph, const int colorCount)
   }
 
   for (int i = 0; i < M_size; i++)
-  { 
+  {
     cout << i << ": ";
     for (int j = 0; j < D[i]; j++)
       cout << M[i][j] << " ";
     cout << endl;
   }
+
+  writeToFile(M, M_size, D, "coloringGraph.txt");
+}
+
+int **graphToMatrix(GRAPH *graph)
+{
+  int i, j;
+  int **M = new int *[graph->size];
+
+  GHNode *walk;
+  for (i = 0; i < graph->size; i++)
+  {
+    j = 0;
+    M[i] = new int[graph->root[i]->degree + 1];
+    walk = graph->root[i]->link;
+    M[i][j] = graph->root[i]->id;
+    j++;
+
+    while (walk)
+    {
+      M[i][j] = walk->id;
+      walk = walk->next;
+      j++;
+    }
+  }
+
+  return M;
 }
 
 int main(int argc, char **argv)
@@ -190,15 +237,27 @@ int main(int argc, char **argv)
   GRAPH *graph;
   graph = createGraph(argv[1]);
 
-  cout << "GRAPH" << endl << "====================================" << endl;
+  cout << "GRAPH" << endl
+       << "====================================" << endl;
   printGraph(graph);
 
   sortGraph(graph);
-  cout << endl << "SORTED GRAPH" << endl << "====================================" << endl;;
+  cout << endl
+       << "SORTED GRAPH" << endl
+       << "====================================" << endl;
   printGraph(graph);
-  
-  cout << endl << "COLORIFY GRAPH" << endl << "====================================" << endl;
+
+  cout << endl
+       << "COLORIFY GRAPH" << endl
+       << "====================================" << endl;
   colorifyGraph(graph, stoi(argv[2]));
+
+  int **M = graphToMatrix(graph);
+  int *cols = new int[graph->size];
+  for (int i = 0; i < graph->size; i++)
+    cols[i] = graph->root[i]->degree + 1;
+
+  writeToFile(M, graph->size, cols, "sortedgraph.txt");
 
   return 0;
 }

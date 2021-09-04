@@ -2,7 +2,8 @@
 ```
 c++ graph_coloring.cpp <file> <chromatic>
 
-$ c++ graph_coloring.cpp data2.txt 3
+$ c++ graph_coloring.cpp
+$ ./a.out data2.txt 3
 GRAPH
 ====================================
 5(2)  : 0 6 

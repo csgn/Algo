@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 struct GHNode 
 {
   int id;
@@ -25,7 +24,6 @@ struct GRAPH
   int size;
   GVNode **root;
 };
-
 
 void printGraph(GRAPH *graph)
 {
@@ -141,10 +139,8 @@ void colorifyGraph(GRAPH *graph, const int colorCount)
   int **M = new int*[colorCount];
   GHNode *walk = nullptr;
 
-
   int M_size = colorCount;
   int A_size = colorCount;
-
 
   for (int i = 0; i < M_size; i++)
     M[i] = new int[i];
@@ -178,7 +174,6 @@ void colorifyGraph(GRAPH *graph, const int colorCount)
       M[a_index][D[a_index]] = root[i]->id;
       D[a_index]++;
     }
-
   }
 
   for (int i = 0; i < M_size; i++)
@@ -186,7 +181,7 @@ void colorifyGraph(GRAPH *graph, const int colorCount)
     cout << i << ": ";
     for (int j = 0; j < D[i]; j++)
       cout << M[i][j] << " ";
-      cout << endl;
+    cout << endl;
   }
 }
 

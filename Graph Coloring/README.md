@@ -38,4 +38,4 @@ COLORIFY GRAPH
 2: 32 26 
 ```
 
-![](data2.png)
+![](example_data.png)

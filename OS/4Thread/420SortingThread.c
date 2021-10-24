@@ -5,7 +5,7 @@
 #define SIZE 10
 #define HALF_SIZE SIZE/2
 
-// threads are share resources each other
+// threads are share resources with each other
 int left[HALF_SIZE] = {7, 12, 19, 3, 18};
 int right[HALF_SIZE] = {4, 2, 6, 15, 8};
 
